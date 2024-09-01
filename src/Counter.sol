@@ -9,6 +9,12 @@ contract Counter {
     }
 
     function increment() public {
+        require(number < type(uint256).max, "Increment would cause overflow");
         number++;
+    }
+
+    function decrement() public {
+        require(number > 0, "Decrement would cause underflow");
+        number--;
     }
 }

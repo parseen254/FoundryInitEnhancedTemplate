@@ -12,13 +12,31 @@ contract CounterTest is Test {
         counter.setNumber(0);
     }
 
-    function test_Increment() public {
-        counter.increment();
-        assertEq(counter.number(), 1);
+    function testFuzz_Increment(uint256 x) public {
+        if (x == type(uint256).max) {
+            counter.setNumber(x);
+            vm.expectRevert("Increment would cause overflow");
+            counter.increment();
+        } else {
+            counter.setNumber(x);
+            counter.increment();
+            assertEq(counter.number(), x + 1);
+        }
     }
 
     function testFuzz_SetNumber(uint256 x) public {
         counter.setNumber(x);
         assertEq(counter.number(), x);
+    }
+
+    function testFuzz_Decrement(uint256 x) public {
+        counter.setNumber(x);
+        if (x == 0) {
+            vm.expectRevert();
+            counter.decrement();
+        } else {
+            counter.decrement();
+            assertEq(counter.number(), x - 1);
+        }
     }
 }
